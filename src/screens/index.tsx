@@ -2,6 +2,7 @@ import React, { useState, FormEvent, Fragment } from "react";
 import btnicon from "@/styles/assets/images/icon-calculator.svg";
 import icon from "@/styles/assets/images/illustration-empty.svg";
 import Image from "next/image";
+import Head from "next/head";
 
 const initialState = {
   amount: "",
@@ -89,6 +90,9 @@ const MainScreen = () => {
 
   return (
     <Fragment>
+      <Head>
+        <title>Mortage Calculator</title>
+      </Head>
       <div className="bg-slate-100 ">
         <div className="container flex justify-center items-center min-h-dvh ">
           <div className="grid grid-cols-1 md:grid-cols-2  bg-white rounded-[25px] overflow-hidden max-w-[1050px]">
