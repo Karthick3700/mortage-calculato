@@ -141,7 +141,7 @@ const MainScreen = () => {
                     />
                   </div>
                   {error.amount && (
-                    <div className="text-red-500 text-sm">{error.amount}</div>
+                    <div className="text-red text-sm">{error.amount}</div>
                   )}
                 </div>
                 <div className="flex w-full gap-2 justify-between flex-wrap md:flex-nowrap">
@@ -163,7 +163,7 @@ const MainScreen = () => {
                       </div>
                     </div>
                     {error.years && (
-                      <div className="text-red-500 text-sm">{error.years}</div>
+                      <div className="text-red text-sm">{error.years}</div>
                     )}
                   </div>
                   <div className="flex flex-col gap-2 md:w-1/2 w-full">
@@ -184,7 +184,7 @@ const MainScreen = () => {
                       </div>
                     </div>
                     {error.interestRate && (
-                      <div className="text-red-500 text-sm">
+                      <div className="text-red text-sm">
                         {error.interestRate}
                       </div>
                     )}
@@ -253,7 +253,7 @@ const MainScreen = () => {
                         Your result are shown below based on the information you
                         provided. All values provided to the nearest one. To
                         adjust the results, edit the form and click
-                        &apos;calculate repayments&apos; again.
+                        &quot;calculate repayments&quot; again.
                       </p>
                       <div className=" p-4 rounded-lg shadow-md bg-slate-950 w-12/12 border-t-[2px] border-t-lime">
                         <div className="flex flex-col gap-2">
@@ -304,8 +304,9 @@ const MainScreen = () => {
                       Results shown here
                     </h2>
                     <p className="text-slate-300 text-normal text-center">
-                      Complete the form and click &apose;Calculate Repayments&apose; to see
-                      what your monthly repayments would be.
+                      Complete the form and click &quot;Calculate
+                      Repayments&quot; to see what your monthly repayments would
+                      be.
                     </p>
                   </Fragment>
                 )}
