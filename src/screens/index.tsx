@@ -4,21 +4,26 @@ import icon from "@/styles/assets/images/illustration-empty.svg";
 import Image from "next/image";
 import Head from "next/head";
 
+interface MortgageResult {
+  monthlyPayment?: number;
+  totalPay?: number;
+  monthlyInterest?: number;
+  totalInterest?: number;
+}
+
 const initialState = {
   amount: "",
   years: "",
   interestRate: "",
-  mortageType: "",
+  mortgageType: "",
 };
 
 const MainScreen = () => {
   const [values, setValues] = useState(initialState);
   const [error, setError] = useState(initialState);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{
-    monthlyRepayment: number;
-    totalRepayment: number;
-  } | null>(null);
+  const [result, setResult] = useState<MortgageResult>({});
+  const [loading, setLoading] = useState(false);
 
   const handleOnChange = (field: string, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -28,8 +33,8 @@ const MainScreen = () => {
     }));
   };
 
-  const handleMortageTypeChange = (value: string) => {
-    setValues((prev) => ({ ...prev, mortageType: value }));
+  const handlemortgageTypeChange = (value: string) => {
+    setValues((prev) => ({ ...prev, mortgageType: value }));
   };
 
   const validateForm = () => {
@@ -43,55 +48,62 @@ const MainScreen = () => {
     if (!values.interestRate) {
       newErrors.interestRate = "Please enter an interest rate";
     }
-    if (!values.mortageType) {
-      newErrors.mortageType = "Please select a mortgage type";
+    if (!values.mortgageType) {
+      newErrors.mortgageType = "Please select a mortgage type";
     }
 
     setError(newErrors);
     return Object.values(newErrors).every((error) => error === "");
   };
 
-  const calculateMortgage = (values: any) => {
-    const { amount, years, interestRate, mortageType } = values;
+  const calculatemortgage = (values: any) => {
+    const { amount, years, interestRate, mortgageType } = values;
 
-    const principal = parseFloat(amount);
-    const annualInterestRate = parseFloat(interestRate) / 100;
-    const months = parseInt(years) * 12;
-    let monthlyRepayment = 0;
-    let totalRepayment = 0;
+    const months = Math.round(parseFloat(years) * 12);
 
-    if (mortageType === "repayment") {
-      const monthlyInterest = annualInterestRate / 12;
-      monthlyRepayment =
-        (principal * monthlyInterest) /
-        (1 - Math.pow(1 + monthlyInterest, -months));
+    const totalInterest = Math.round(
+      (amount * parseFloat(interestRate) * months) / 100
+    );
 
-      totalRepayment = monthlyRepayment * months;
-    } else if (mortageType === "interestOnly") {
-      monthlyRepayment = (principal * annualInterestRate) / 12;
-      totalRepayment = monthlyRepayment * months;
+    if (mortgageType === "repayment") {
+      const totalPay = parseFloat(amount) + totalInterest;
+
+      const monthlyPayment = Math.round(totalPay / months);
+
+      return {
+        monthlyPayment,
+        totalPay,
+      };
+    } else if (mortgageType === "interestOnly") {
+      const monthlyInterest = Math.round(totalInterest / months);
+      return {
+        monthlyInterest,
+        totalInterest,
+      };
+    } else {
+      throw new Error("Invalid mortgage type");
     }
-
-    return {
-      monthlyRepayment: Math.round(monthlyRepayment),
-      totalRepayment: Math.round(totalRepayment),
-    };
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      setSubmitting(true);
-      const calculationResult = calculateMortgage(values);
-      setResult(calculationResult);
-      setSubmitting(false);
+      setLoading(true);
+      try {
+        const calculation = calculatemortgage(values);
+        setResult(calculation);
+      } catch (error) {
+        console.log("Error in calculate mortgage::", error);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
   return (
     <Fragment>
       <Head>
-        <title>Mortage Calculator</title>
+        <title>mortgage Calculator</title>
       </Head>
       <div className="bg-slate-100 ">
         <div className="container flex justify-center items-center min-h-dvh ">
@@ -188,10 +200,10 @@ const MainScreen = () => {
                       <input
                         type="radio"
                         className="col-start-1 row-start-1 appearance-none shrink-0 w-4 h-4 border-2 border-lime rounded-full"
-                        checked={values.mortageType === "repayment"}
-                        onChange={() => handleMortageTypeChange("repayment")}
+                        checked={values.mortgageType === "repayment"}
+                        onChange={() => handlemortgageTypeChange("repayment")}
                       />
-                      {values.mortageType === "repayment" && (
+                      {values.mortgageType === "repayment" && (
                         <div className="col-start-1 row-start-1 w-2 h-2 rounded-full bg-lime" />
                       )}
                     </div>
@@ -204,10 +216,12 @@ const MainScreen = () => {
                       <input
                         type="radio"
                         className="col-start-1 row-start-1 appearance-none shrink-0 w-4 h-4 border-2 border-lime rounded-full"
-                        checked={values.mortageType === "interestOnly"}
-                        onChange={() => handleMortageTypeChange("interestOnly")}
+                        checked={values.mortgageType === "interestOnly"}
+                        onChange={() =>
+                          handlemortgageTypeChange("interestOnly")
+                        }
                       />
-                      {values.mortageType === "interestOnly" && (
+                      {values.mortgageType === "interestOnly" && (
                         <div className="col-start-1 row-start-1 w-2 h-2 rounded-full bg-lime" />
                       )}
                     </div>
@@ -223,7 +237,7 @@ const MainScreen = () => {
                   >
                     <Image src={btnicon} alt="calculator svg" />
                     <span className="font-bold text-normal md:text-lg">
-                      Calculate Repayments
+                      Calculate Payments
                     </span>
                   </button>
                 </div>
@@ -231,49 +245,50 @@ const MainScreen = () => {
             </div>
             <div className=" bg-slate-900 md:rounded-es-[50px] flex items-center justify-center p-4 md:p-12">
               <div className="flex  flex-col h-auto justify-center gap-6 items-center w-full">
-                {result ? (
+                {Object.keys(result).length > 0 ? (
                   <Fragment>
                     <div className="flex flex-col w-full gap-8">
                       <h2 className="text-white">Your Results</h2>
                       <p className="text-slate-500 text-normal">
                         Your result are shown below based on the information you
-                        provided. To adjust the results, edit the form and click
-                        'calculate repayments' again.
+                        provided. All values provided to the nearest one. To
+                        adjust the results, edit the form and click 'calculate
+                        repayments' again.
                       </p>
                       <div className=" p-4 rounded-lg shadow-md bg-slate-950 w-12/12 border-t-[2px] border-t-lime">
                         <div className="flex flex-col gap-2">
-                          {values.mortageType === "repayment" && (
+                          {values.mortgageType === "repayment" && (
                             <Fragment>
                               <div className="flex flex-col p-2">
                                 <div className="font-bold text-md text-slate-500">
                                   Your monthly repayments
                                 </div>
                                 <div className=" text-lime text-6xl font-bold mt-2">
-                                  ₹ {result.monthlyRepayment}
+                                  ₹ {result.monthlyPayment}
                                 </div>
                                 <div className="font-bold text-md  text-slate-500 mt-4">
                                   Total you'll repay over the term
                                 </div>
                                 <div className="text-white text-normal font-semibold mt-2">
-                                  ₹ {result.totalRepayment}
+                                  ₹ {result.totalPay}
                                 </div>
                               </div>
                             </Fragment>
                           )}
-                          {values.mortageType === "interestOnly" && (
+                          {values.mortgageType === "interestOnly" && (
                             <Fragment>
                               <div className="flex flex-col p-2">
                                 <div className="font-bold text-md text-slate-500">
                                   Monthly Interest
                                 </div>
                                 <div className=" text-lime text-6xl font-bold mt-2">
-                                  ₹ {result.monthlyRepayment}
+                                  ₹ {result.monthlyInterest}
                                 </div>
                                 <div className="font-bold text-md  text-slate-500 mt-4">
                                   Total Interest
                                 </div>
                                 <div className="text-white text-normal font-semibold mt-2">
-                                  ₹ {result.totalRepayment}
+                                  ₹ {result.totalInterest}
                                 </div>
                               </div>
                             </Fragment>
