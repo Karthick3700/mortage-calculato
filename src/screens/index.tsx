@@ -103,7 +103,7 @@ const MainScreen = () => {
   return (
     <Fragment>
       <Head>
-        <title>mortgage Calculator</title>
+        <title>Mortgage Calculator</title>
       </Head>
       <div className="bg-slate-100 ">
         <div className="container flex justify-center items-center min-h-dvh ">
@@ -252,8 +252,8 @@ const MainScreen = () => {
                       <p className="text-slate-500 text-normal">
                         Your result are shown below based on the information you
                         provided. All values provided to the nearest one. To
-                        adjust the results, edit the form and click 'calculate
-                        repayments' again.
+                        adjust the results, edit the form and click
+                        &apos;calculate repayments&apos; again.
                       </p>
                       <div className=" p-4 rounded-lg shadow-md bg-slate-950 w-12/12 border-t-[2px] border-t-lime">
                         <div className="flex flex-col gap-2">
@@ -267,7 +267,7 @@ const MainScreen = () => {
                                   ₹ {result.monthlyPayment}
                                 </div>
                                 <div className="font-bold text-md  text-slate-500 mt-4">
-                                  Total you'll repay over the term
+                                  Total you will repay over the term
                                 </div>
                                 <div className="text-white text-normal font-semibold mt-2">
                                   ₹ {result.totalPay}
@@ -304,7 +304,7 @@ const MainScreen = () => {
                       Results shown here
                     </h2>
                     <p className="text-slate-300 text-normal text-center">
-                      Complete the form and click "calculate repayments" to see
+                      Complete the form and click &apose;Calculate Repayments&apose; to see
                       what your monthly repayments would be.
                     </p>
                   </Fragment>
